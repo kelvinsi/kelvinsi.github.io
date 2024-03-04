@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 0; /* Remove default margin */
+        }
+
+        .container {
+            width: 400px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 10px;
+            margin-top: 20px;
+        }
+        .grid-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .button-container button {
+            margin: 0 10px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        form {
+            margin-top: 20px;
+        }
+        label {
+            margin-right: 5px;
+        }
+        input[type="number"] {
+            padding: 5px;
+            margin-right: 10px;
+            width: 70px;
+        }
+
+        .results-container {
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 20px;
+        }
+
+        #drawResults {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #drawResults th, #drawResults td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        #drawResults th {
+            background-color: #f2f2f2;
+        }
+        #drawResults td:nth-of-type(n + 2) {
+            font-family: monospace;
+        }
+
+        #drawResults tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Repeatedly Select without Replacement</h1>
+        <p>Draws a selection of numbers from a bag of numbers in the specified range, without replacement, over multiple rounds.</p>
+        <form id="numberForm">
+            <div class="grid-container">
+                <div class="grid-item">
+                    <label for="lowerBound">Lower Bound:</label>
+                    <input type="number" id="lowerBound" required>
+                </div>
+                <div class="grid-item">
+                    <label for="upperBound">Upper Bound:</label>
+                    <input type="number" id="upperBound" required>
+                </div>
+                <div class="grid-item">
+                    <label for="numToDraw">Selection Size:</label>
+                    <input type="number" id="numToDraw" required>
+                </div>
+            </div>
+            <div class="button-container">
+                <button type="button" onclick="drawNumbers()">Draw</button>
+                <button type="button" onclick="resetDraw()">Reset</button>
+            </div>
+        </form>
+        <div class="results-container">
+            <h2>Results</h2>
+            <table id="drawResults">
+                <thead>
+                    <tr>
+                        <th>Sample #</th>
+                        <th>Drawn Numbers</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Results will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        const drawResultsDiv = document.getElementById('drawResults');
+        var numbersToDraw = [];
+        var drawIndex = 0;
+
+        function drawNumbers() {
+            var lowerBound = parseInt(document.getElementById('lowerBound').value);
+            var upperBound = parseInt(document.getElementById('upperBound').value);
+            var numToDraw = parseInt(document.getElementById('numToDraw').value);
+            
+            // Check for valid input
+            if (!(lowerBound < upperBound && numToDraw > 0)) {
+                alert('Invalid input. Please check your input values.');
+                return;
+            }
+            
+            // Initialize numbers to draw
+            if (numbersToDraw.length === 0) {
+                if (drawIndex > 0) {
+                    alert('No numbers left in bag.');
+                    return;
+                }
+                numbersToDraw = Array.from(
+                    Array(upperBound - lowerBound + 1)
+                    , (e, idx) => idx + lowerBound
+                );
+                numbersToDraw.sort(() => Math.random() - 0.5);
+            }
+            
+            // Draw numbers
+            var thisDraw = numbersToDraw.splice(0, numToDraw);
+
+            // Display results
+            if (thisDraw.length > 0) {
+                ++drawIndex;
+                thisDraw.sort((a, b) => a - b);
+                const pad = '&nbsp;';
+                var maxPad = Math.ceil(Math.log10(upperBound))+1;
+                var drawResultString = `<tr>
+                                <td># ${drawIndex}</td>
+                                <td>${thisDraw.map(e => e.toString().padStart(maxPad, '\u00A0')).join('')}</td>
+                            </tr>`;
+                var drawResultsTableBody = drawResultsDiv.querySelector('tbody');
+                drawResultsTableBody.innerHTML += drawResultString;
+            }
+        }
+
+        function resetDraw() {
+            numbersToDraw.length = 0;
+            drawIndex = 0;
+            drawResultsDiv.innerHTML = '';
+        }
+    </script>
+</body>
+</html>
