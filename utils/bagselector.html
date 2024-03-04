@@ -130,7 +130,7 @@
         </div>
     </div>
     <script>
-        const drawResultsDiv = document.getElementById('drawResults');
+        const drawResultsElem = document.getElementById('drawResults').querySelector('tbody');
         var numbersToDraw = [];
         var drawIndex = 0;
 
@@ -171,15 +171,14 @@
                                 <td># ${drawIndex}</td>
                                 <td>${thisDraw.map(e => e.toString().padStart(maxPad, '\u00A0')).join('')}</td>
                             </tr>`;
-                var drawResultsTableBody = drawResultsDiv.querySelector('tbody');
-                drawResultsTableBody.innerHTML += drawResultString;
+                drawResultsElem.innerHTML += drawResultString;
             }
         }
 
         function resetDraw() {
             numbersToDraw.length = 0;
             drawIndex = 0;
-            drawResultsDiv.innerHTML = '';
+            drawResultsElem.innerHTML = '';
         }
     </script>
 </body>
